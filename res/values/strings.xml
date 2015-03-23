@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">a1111</string>
+    <string name="hello_world">test Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="large1">testlarge1</string>
+    <drawable name="red">#ffff0000</drawable>
+</resources>
