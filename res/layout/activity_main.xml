@@ -20,21 +20,12 @@
         android:visibility="invisible"/>
 
     <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/main_play"
-        android:onClick="onClick2"
-        android:tag="play" />
-
-    <Button
         android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/button1"
-        android:layout_below="@+id/button1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/button2"
+        android:layout_marginLeft="18dp"
         android:onClick="onrain"
         android:text="rain" />
 
@@ -42,12 +33,41 @@
         android:id="@+id/button4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button3"
         android:layout_alignBottom="@+id/button3"
-        android:layout_marginLeft="40dp"
-        android:layout_toRightOf="@+id/button3"
-        android:text="lake" 
-        android:onClick="onlake"/>
+        android:layout_alignParentRight="true"
+        
+        android:layout_marginRight="28dp"
+        android:onClick="onlake"
+        android:text="lake" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="126dp"
+        android:layout_toRightOf="@+id/button1"
+        android:background="@drawable/main_play"
+        android:onClick="onClick2"
+        android:tag="play" />
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button4"
+        android:layout_alignRight="@+id/button4"
+        android:layout_marginBottom="35dp"
+        android:onClick="onvol"
+        android:text="Button" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/button5"
+        android:layout_toRightOf="@+id/button1"
+        android:text="TextView" />
 
 </RelativeLayout>
 

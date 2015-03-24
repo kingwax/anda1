@@ -1,5 +1,6 @@
 package com.example.a1;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -137,8 +139,27 @@ public class MainActivity extends Activity
     
     public  void onlake(View v)
     {
-    	mplake.setVolume(10, 10);
+    	//mplake.setVolume(10, 10);
+    	try {
+			mplake.prepare();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	mplake.start();        	
+    }
+    
+    float lakevol=(float)0.1;
+    public  void onvol(View v)
+    {
+    	TextView t = (TextView)findViewById(R.id.textView1);
+    	lakevol+=0.1;
+    	t.setText(Float.toString(lakevol));
+    	mplake.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+    	mplake.setVolume(lakevol,lakevol);
     }
     
     public  void onClick2(View v)
