@@ -16,6 +16,7 @@ import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,6 +37,10 @@ import android.os.Build;
 public class MainActivity extends Activity 
 {
 
+	MediaPlayer mprainlake;  
+	MediaPlayer mprain; 
+	MediaPlayer mplake; 
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,22 +51,41 @@ public class MainActivity extends Activity
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+        
+        
+        	mprainlake=MediaPlayer.create(this,R.raw.rainlake);
+        	mprainlake.setOnCompletionListener(mplistener);
+        	
+        	mprain=MediaPlayer.create(this,R.raw.rainsound);
+        	mprain.setOnCompletionListener(mplistener);
+        	
+        	mplake=MediaPlayer.create(this,R.raw.lake);
+        	mplake.setOnCompletionListener(mplistener);
+
     }
 
+    MediaPlayer.OnCompletionListener mplistener = new MediaPlayer.OnCompletionListener() {
+		
+		@Override
+		public void onCompletion(MediaPlayer arg0) {
+			
+			arg0.start();
+		}
+	};
+    
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        menu.add("菜单项1");
-        
-        menu.add(1, 1, 1, "item 1");
-        menu.add(1, 2, 2, "item 2");
-        menu.add(2, 3, 3, "item 3");
-        menu.add(2, 4, 4, "item 4");
+        menu.add("下载其他音乐");
+        //menu.add(1, 1, 1, "item 1");
+        //menu.add(1, 2, 2, "item 2");
+        //menu.add(2, 3, 3, "item 3");
+        //menu.add(2, 4, 4, "item 4");
         return true;
     }
-	MediaPlayer mediaPlayer;  
+	
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -69,34 +93,29 @@ public class MainActivity extends Activity
         // as you specify a parent activity in AndroidManifest.xml.
     	
         int id = item.getItemId();
-        dialog( Integer.toString(id));
+        
         switch (id) {
         
         //响应每个菜单项(通过菜单项的ID)
+        case 0:
+        	
+        	dialog("暂未开放功能");
+            break;
     case 1:
     	
-    	mediaPlayer=MediaPlayer.create(this,R.raw.rainlake);
-    	mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-			
-			@Override
-			public void onCompletion(MediaPlayer arg0) {
-				
-				arg0.start();
-			}
-		});
-    	mediaPlayer.start();
+    	
     break;
         case 2:
             // do something here
-        	mediaPlayer.stop();
+        	
     break;
         case 3:
             // do something here
-        	mediaPlayer.pause();
+        	
     break;
         case 4:
             // do something here
-        	mediaPlayer.start();
+        	
     break;
         default:
             //对没有处理的事件，交给父类来处理
@@ -107,8 +126,40 @@ public class MainActivity extends Activity
             return true;
         }
         return super.onOptionsItemSelected(item);
+        
+        
     }
 
+    public  void onrain(View v)
+    {
+    	 mprain.start();    	
+    }
+    
+    public  void onlake(View v)
+    {
+    	mplake.setVolume(10, 10);
+    	mplake.start();        	
+    }
+    
+    public  void onClick2(View v)
+    {
+
+      Button b = (Button)findViewById(R.id.button2);
+      if(b.getTag().toString()!="pause")
+      {
+    	  b.setBackgroundResource(R.drawable.main_pause);
+          b.setTag("pause");
+          mprainlake.start();
+      }
+      else
+      {
+      b.setBackgroundResource(R.drawable.main_play); 
+	  b.setTag("play");
+	  mprainlake.stop();
+      }
+      
+    }
+    
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -128,6 +179,24 @@ public class MainActivity extends Activity
         }
     }
 
+    @Override
+    protected void onStop() {
+    	// TODO Auto-generated method stub
+    	if(mprainlake!=null)
+    		mprainlake.release();
+    	if(mprain!=null)
+    		mprain.release();
+    	if(mplake!=null)
+    		mplake.release();
+    	super.onStop();
+    }
+    @Override
+    protected void onDestroy() {
+    	// TODO Auto-generated method stub
+    	super.onDestroy();
+    	
+    }
+    
     protected void dialog(String  s) {
     	  AlertDialog.Builder builder = new Builder(MainActivity.this);
     	  builder.setMessage(s);  
