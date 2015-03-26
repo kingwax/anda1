@@ -20,6 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,18 +33,23 @@ public class MainActivity extends Activity
 	Boolean israinplay = false;
     Boolean islakeplay = false;
     float lakevol=(float)0.1;
-    
+    String[] ls=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.solidrelative);
 
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
-        }
+//        if (savedInstanceState == null) {
+//            getFragmentManager().beginTransaction()
+//                    .add(R.id.container, new PlaceholderFragment())
+//                    .commit();
+//        }
          	
+        BidirSlidingLayout bidirSldingLayout= (BidirSlidingLayout) findViewById(R.id.bidir_sliding_layout);  
+        RelativeLayout container1 = (RelativeLayout) findViewById(R.id.container123);  
+       
+        bidirSldingLayout.setScrollEvent(container1); 
+        
         	mprain=MediaPlayer.create(this,R.raw.rainsound);
         	mprain.setOnCompletionListener(mplistener);
         	
@@ -50,8 +57,8 @@ public class MainActivity extends Activity
         	mplake.setOnCompletionListener(mplistener);
         	createSDCardDir();
         	
-        	this.registerForContextMenu(findViewById(R.id.button3));
-        	this.registerForContextMenu(findViewById(R.id.button4));
+        	//this.registerForContextMenu(findViewById(R.id.button3));
+        	//this.registerForContextMenu(findViewById(R.id.button4));
     }
 
     MediaPlayer.OnCompletionListener mplistener = new MediaPlayer.OnCompletionListener() {
@@ -69,9 +76,10 @@ public class MainActivity extends Activity
         
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        menu.add(1, 1, 2, "帮助");
         //menu.add("下载其他音乐");
-        menu.add(1, 1, 1, "鋼琴");
-        menu.add(1, 2, 2, "古琴");
+        //menu.add(1, 1, 1, "鋼琴");
+        //menu.add(1, 2, 2, "古琴");
         //menu.add(2, 3, 3, "item 3");
         //menu.add(2, 4, 4, "item 4");
         return true;
@@ -93,14 +101,10 @@ public class MainActivity extends Activity
         	dialog("暂未开放功能");
             break;
         case 1:
-	    	mplake=null;
-	    	mplake=MediaPlayer.create(this,R.raw.lake);
-	    	mplake.setOnCompletionListener(mplistener);
+        	 setContentView(R.layout.line);
     break;
 		case 2:
-        	mplake=null;
-        	mplake=MediaPlayer.create(this,R.raw.gq);
-        	mplake.setOnCompletionListener(mplistener);
+        	
         	
     break;
         case 3:
@@ -124,6 +128,11 @@ public class MainActivity extends Activity
         
     }
 
+    public  void onreturn(View v)
+    {
+    	setContentView(R.layout.activity_main);    	
+    }
+    
     public  void onrain(View v)
     {
     	Button b = (Button)findViewById(R.id.button3);
@@ -190,18 +199,24 @@ public class MainActivity extends Activity
     }
     
     public void createSDCardDir(){
-        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
+        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()))
+        {
                // 创建一个文件夹对象，赋值为外部存储器的目录
-                File sdcardDir =Environment.getExternalStorageDirectory();
+              File sdcardDir =Environment.getExternalStorageDirectory();
               //得到一个路径，内容是sdcard的文件夹路径和名字
                 String path=sdcardDir.getPath()+"/rainlake";
                 File path1 = new File(path);
-               if (!path1.exists()) {
+               if (!path1.exists()) 
+               {
                 //若不存在，创建目录，可以在应用启动的时候创建
                 path1.mkdirs();
                 //dialog("paht ok,path:"+path);
               }
+               else
+               {
+            	   ls =path1.list();
                }
+       }
         else{
         	//dialog("paht fail");
          return;
@@ -260,36 +275,80 @@ public class MainActivity extends Activity
    // 注意此处的menu是ContextMenu  
     	if(( (android.widget.Button)v).getTag().toString().equals("y"))
     	{
-   menu.add(0, 1, 0, "雨");  
-   menu.add(0, 2, 0, "海");  
+		   menu.add(0, 1, 0, "雨");  
+		   menu.add(0, 2, 0, "海");  
     	}
     	if(( (android.widget.Button)v).getTag().toString().equals("q"))
     	{
-   menu.add(0, 3, 0, "钢琴");  
-   menu.add(0, 4, 0, "古琴");  
+		   menu.add(0, 3, 0, "钢琴");  
+		   menu.add(0, 4, 0, "古琴"); 
+		   if(ls!=null)
+		   {
+		   for(int i=0;i<ls.length;i++)
+		   {
+			   menu.add(0, i+5, 0, ls[i]); 			   
+		   }
+		   }
     	}
  } 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-    	dialog(Integer.toString(item.getItemId()));
+    	//dialog(Integer.toString(item.getItemId()));
     	switch(item.getItemId()) {
         case 1:
-            // do something
+        	StopMp(mprain);
+        	mprain=MediaPlayer.create(this,R.raw.rainsound);
+        	mprain.setOnCompletionListener(mplistener);
     break;
         case 2:
-            // do something
+        	StopMp(mprain);
+        	mprain=MediaPlayer.create(this,R.raw.sea);
+        	mprain.setOnCompletionListener(mplistener);
     break;
         case 3:
-            // do something
+        	StopMp(mplake);
+        	mplake=MediaPlayer.create(this,R.raw.lake);
+        	mplake.setOnCompletionListener(mplistener);
     break;
         case 4:
-            // do something
+        	StopMp(mplake);
+        	mplake=MediaPlayer.create(this,R.raw.gq);
+        	mplake.setOnCompletionListener(mplistener);
     break;
         default:
-            return super.onContextItemSelected(item);
+            //return super.onContextItemSelected(item);
+        	File sdcardDir =Environment.getExternalStorageDirectory();
+            //得到一个路径，内容是sdcard的文件夹路径和名字
+              String path=sdcardDir.getPath()+"/rainlake/"+item.getTitle();
+              StopMp(mplake);
+              mplake = new MediaPlayer();
+              try {
+				mplake.setDataSource(path);
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
         return true;
     	//return super.onContextItemSelected(item);
+    }
+    
+    void StopMp(MediaPlayer mp)
+    {
+    	if(mp!=null)
+    	{
+    		mp.stop();
+    		mp.release();
+    	}
     }
     
     protected void dialog(String  s) {
