@@ -5,5 +5,7 @@
     <string name="hello_world">test Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="large1">testlarge1</string>
+    <string name="qin">琴</string>
+    <string name="yu">雨</string>
     <drawable name="red">#ffff0000</drawable>
 </resources>

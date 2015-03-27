@@ -10,16 +10,19 @@
         android:layout_width="270dip"  
         android:layout_height="fill_parent"  
         android:layout_alignParentLeft="true"  
-        android:background="#00ccff"  
+         
         android:visibility="invisible" >  
   
-        <TextView  
-            android:layout_width="wrap_content"  
-            android:layout_height="wrap_content"  
-            android:layout_centerInParent="true"  
-            android:text="This is left menu"  
-            android:textColor="#000000"  
-            android:textSize="28sp" />  
+        <ListView
+        android:id="@+id/leftlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="41dp"
+        android:layout_marginTop="25dp" 
+        android:focusable="true">
+    </ListView>
     </RelativeLayout>  
   
     <RelativeLayout  
@@ -27,17 +30,19 @@
         android:layout_width="270dip"  
         android:layout_height="fill_parent"  
         android:layout_alignParentRight="true"  
-        android:background="#00ffcc"  
+        
         android:visibility="invisible" >  
   
-        <TextView  
-            android:layout_width="wrap_content"  
-            android:layout_height="wrap_content"  
-            android:layout_centerInParent="true"  
-            android:text="This is right menu"  
-            android:textColor="#000000"  
-            android:textSize="28sp" />  
-    </RelativeLayout>  
+        <ListView
+        android:id="@+id/rightlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="41dp"
+        android:layout_marginTop="25dp" >
+        </ListView>
+        </RelativeLayout>  
   
     <LinearLayout  
         android:id="@+id/content"  
@@ -56,17 +61,7 @@
 android:focusable="true"
 android:focusableInTouchMode="true">
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="49dp"
-        android:layout_marginTop="50dp"
-        android:background="@drawable/buttonshape"
-        android:text="播放" 
-        android:visibility="invisible"/>
+
 
     <Button
         android:id="@+id/button4"
@@ -78,7 +73,7 @@ android:focusableInTouchMode="true">
         android:background="@drawable/main_play"
         android:onClick="onlake"
         android:tag="q"
-        android:text="琴" />
+        android:text="@string/qin" />
 
 <Button
     android:id="@+id/button3"
@@ -91,40 +86,7 @@ android:focusableInTouchMode="true">
     android:background="@drawable/main_play"
     android:onClick="onrain"
     android:tag="y"
-    android:text="雨" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="126dp"
-        android:layout_toRightOf="@+id/button1"
-        android:background="@drawable/main_play"
-        android:onClick="onClick2"
-        android:tag="play" 
-        android:visibility="invisible"/>
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/button5"
-        android:layout_alignTop="@+id/button5"
-        android:layout_toRightOf="@+id/button1"
-        android:text="TextView" 
-        android:visibility="invisible"/>
-
-    <Button
-        android:id="@+id/button5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/button1"
-        android:layout_marginTop="33dp"
-        android:layout_toLeftOf="@+id/button4"
-        android:onClick="onvol"
-        android:text="Button"
-        android:visibility="invisible" />
+    android:text="@string/yu" />
 
 </RelativeLayout>
 

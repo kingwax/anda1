@@ -2,6 +2,8 @@ package com.example.a1;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,6 +21,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -27,25 +32,31 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity 
 {
-	//MediaPlayer mprainlake;  
 	MediaPlayer mprain; 
 	MediaPlayer mplake; 
 	Boolean israinplay = false;
     Boolean islakeplay = false;
     float lakevol=(float)0.1;
     String[] ls=null;
+    ListView listViewleft=null;
+    ListView listViewright=null;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.solidrelative);
-
+        init();
 //        if (savedInstanceState == null) {
 //            getFragmentManager().beginTransaction()
 //                    .add(R.id.container, new PlaceholderFragment())
 //                    .commit();
 //        }
-         	
-        BidirSlidingLayout bidirSldingLayout= (BidirSlidingLayout) findViewById(R.id.bidir_sliding_layout);  
+    }
+    ListSelect adapter;
+    ListSelect adapterright;
+    private void init()
+    {
+    	BidirSlidingLayout bidirSldingLayout= (BidirSlidingLayout) findViewById(R.id.bidir_sliding_layout);  
         RelativeLayout container1 = (RelativeLayout) findViewById(R.id.container123);  
        
         bidirSldingLayout.setScrollEvent(container1); 
@@ -54,22 +65,231 @@ public class MainActivity extends Activity
         	mprain.setOnCompletionListener(mplistener);
         	
         	mplake=MediaPlayer.create(this,R.raw.lake);
-        	mplake.setOnCompletionListener(mplistener);
+        	mplake.setOnCompletionListener(mplistenerlake);
         	createSDCardDir();
         	
+        	adapter = new ListSelect(this,getData()); 
+        	listViewleft = (ListView)findViewById(R.id.leftlist);
+        	listViewleft.setAdapter(adapter);
+        	listViewleft.setChoiceMode(ListView.CHOICE_MODE_SINGLE);// 一定要设置这个属性，否则ListView不会刷新    
+        	listViewleft.setOnItemClickListener(new OnItemClickListener() {    
+        	@Override   
+        	public void onItemClick(AdapterView<?> arg0, View arg1,    
+        	int position, long id) {    
+        		adapter.cur_pos = position;// 更新当前行    
+        		adapter.notifyDataSetInvalidated();
+        		
+        		String item = adapter.getItem(position);
+        		if(item.equals("细雨"))
+                {
+    				 StopMp(mprain);
+    		        	mprain=MediaPlayer.create(MainActivity.this,R.raw.rainsound);
+    		        	mprain.setOnCompletionListener(mplistener);
+                }
+    			 else if(item.equals("大海"))
+                {
+    				 StopMp(mprain);
+    		        	mprain=MediaPlayer.create(MainActivity.this,R.raw.sea);
+    		        	mprain.setOnCompletionListener(mplistener);
+                }
+    			 else
+    			 {
+    				 File sdcardDir =Environment.getExternalStorageDirectory();
+    		            //得到一个路径，内容是sdcard的文件夹路径和名字
+    		              String path=sdcardDir.getPath()+"/rainlake/"+item;
+    		              StopMp(mprain);
+    		              mprain = new MediaPlayer();
+    		              try {
+    		            	  mprain.setDataSource(path);
+    					} catch (IllegalArgumentException e) {
+    						// TODO Auto-generated catch block
+    						e.printStackTrace();
+    					} catch (SecurityException e) {
+    						// TODO Auto-generated catch block
+    						e.printStackTrace();
+    					} catch (IllegalStateException e) {
+    						// TODO Auto-generated catch block
+    						e.printStackTrace();
+    					} catch (IOException e) {
+    						// TODO Auto-generated catch block
+    						e.printStackTrace();
+    					}
+    			 }
+        	}    
+        	});   
+        	
+        	
+        	
+        	/*listViewleft.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_checked,getData()));
+        	listViewleft.setOnItemClickListener(itemlistenleft);*/
+        	adapterright = new ListSelect(this,getData()); 
+        	listViewright = (ListView)findViewById(R.id.rightlist);
+        	listViewright.setAdapter(adapterright);
+        	listViewright.setChoiceMode(ListView.CHOICE_MODE_SINGLE);// 一定要设置这个属性，否则ListView不会刷新    
+        	listViewright.setOnItemClickListener(new OnItemClickListener() {    
+        	@Override   
+        	public void onItemClick(AdapterView<?> arg0, View arg1,    
+        	int position, long id) {    
+        		adapterright.cur_pos = position;// 更新当前行    
+        		adapterright.notifyDataSetInvalidated();
+        		String item = adapterright.getItem(position);
+        		if(item.equals("细雨"))
+                {
+     				 StopMp(mplake);
+     				 mplake=MediaPlayer.create(MainActivity.this,R.raw.rainsound);
+     				 mplake.setOnCompletionListener(mplistener);
+                }
+     			 else if(item.equals("大海"))
+                {
+     				 StopMp(mplake);
+     				 mplake=MediaPlayer.create(MainActivity.this,R.raw.sea);
+     				 mplake.setOnCompletionListener(mplistener);
+                }
+     			 else
+     			 {
+     				 File sdcardDir =Environment.getExternalStorageDirectory();
+     		            //得到一个路径，内容是sdcard的文件夹路径和名字
+     		              String path=sdcardDir.getPath()+"/rainlake/"+item;
+     		              StopMp(mplake);
+     		              mplake = new MediaPlayer();
+     		              try {
+     		            	  mplake.setDataSource(path);
+     					} catch (IllegalArgumentException e) {
+     						// TODO Auto-generated catch block
+     						e.printStackTrace();
+     					} catch (SecurityException e) {
+     						// TODO Auto-generated catch block
+     						e.printStackTrace();
+     					} catch (IllegalStateException e) {
+     						// TODO Auto-generated catch block
+     						e.printStackTrace();
+     					} catch (IOException e) {
+     						// TODO Auto-generated catch block
+     						e.printStackTrace();
+     					}
+     			 }
+        	}    
+        	});   
+        	//listViewright.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_checked,getData()));
+        	//listViewright.setOnItemClickListener(itemlistenright);
         	//this.registerForContextMenu(findViewById(R.id.button3));
         	//this.registerForContextMenu(findViewById(R.id.button4));
     }
-
+    
+    private List<String> getData(){
+        
+        List<String> data = new ArrayList<String>();
+        /*data.add("1");
+        data.add("11");
+        data.add("111");
+        data.add("1111");
+        data.add("11111");
+        data.add("111111");
+        data.add("1111111");*/
+        data.add("细雨");
+        data.add("大海");
+        if(ls!=null)
+		   {
+		   for(int i=0;i<ls.length;i++)
+		   {
+			   data.add(ls[i]); 			   
+		   }
+		   }
+        return data;
+    }
+    
     MediaPlayer.OnCompletionListener mplistener = new MediaPlayer.OnCompletionListener() {
 		
 		@Override
 		public void onCompletion(MediaPlayer arg0) {
+
+			String item = adapter.getItem(adapter.cur_pos);
+			if(item.equals("细雨"))
+            {
+ 				
+            }
+ 			 else if(item.equals("大海"))
+            {
+ 				 
+            }
+ 			 else
+ 			 {
+ 				 File sdcardDir =Environment.getExternalStorageDirectory();
+ 		            //得到一个路径，内容是sdcard的文件夹路径和名字
+ 		              String path=sdcardDir.getPath()+"/rainlake/"+item;
+ 		              
+ 		              try {
+ 		            	 arg0.setDataSource(path);
+ 					} catch (IllegalArgumentException e) {
+ 						// TODO Auto-generated catch block
+ 						e.printStackTrace();
+ 					} catch (SecurityException e) {
+ 						// TODO Auto-generated catch block
+ 						e.printStackTrace();
+ 					} catch (IllegalStateException e) {
+ 						// TODO Auto-generated catch block
+ 						e.printStackTrace();
+ 					} catch (IOException e) {
+ 						// TODO Auto-generated catch block
+ 						e.printStackTrace();
+ 					}
+ 			 }
 			
+			try {
+				arg0.prepareAsync();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 			
 			arg0.start();
 		}
 	};
     
+	MediaPlayer.OnCompletionListener mplistenerlake = new MediaPlayer.OnCompletionListener() {
+		
+		@Override
+		public void onCompletion(MediaPlayer arg0) {
+			String item = adapter.getItem(adapterright.cur_pos);
+			if(item.equals("细雨"))
+            {
+ 				
+            }
+ 			 else if(item.equals("大海"))
+            {
+ 				 
+            }
+ 			 else
+ 			 {
+ 				 File sdcardDir =Environment.getExternalStorageDirectory();
+ 		            //得到一个路径，内容是sdcard的文件夹路径和名字
+ 		              String path=sdcardDir.getPath()+"/rainlake/"+item;
+ 		              
+ 		              try {
+ 		            	 arg0.setDataSource(path);
+ 					} catch (IllegalArgumentException e) {
+ 						// TODO Auto-generated catch block
+ 						e.printStackTrace();
+ 					} catch (SecurityException e) {
+ 						// TODO Auto-generated catch block
+ 						e.printStackTrace();
+ 					} catch (IllegalStateException e) {
+ 						// TODO Auto-generated catch block
+ 						e.printStackTrace();
+ 					} catch (IOException e) {
+ 						// TODO Auto-generated catch block
+ 						e.printStackTrace();
+ 					}
+ 			 }
+			try {
+				arg0.prepareAsync();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 	
+			arg0.start();
+		}
+	};
+	
 	
 	@Override 
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -101,7 +321,8 @@ public class MainActivity extends Activity
         	dialog("暂未开放功能");
             break;
         case 1:
-        	 setContentView(R.layout.line);
+        	 //setContentView(R.layout.line);
+        	dialog("可以在SD卡的rainlake目录下放入喜欢的mp3文件");
     break;
 		case 2:
         	
@@ -130,7 +351,7 @@ public class MainActivity extends Activity
 
     public  void onreturn(View v)
     {
-    	setContentView(R.layout.activity_main);    	
+    	init();
     }
     
     public  void onrain(View v)
@@ -139,11 +360,8 @@ public class MainActivity extends Activity
     	if(!israinplay)
     	{
     		try {
-				mprain.prepare();
+				mprain.prepareAsync();
 			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -165,11 +383,8 @@ public class MainActivity extends Activity
     	if(!islakeplay)
     	{
     		try {
-				mplake.prepare();
+				mplake.prepareAsync();
 			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -187,15 +402,9 @@ public class MainActivity extends Activity
 
     public  void onvol(View v)
     {
-    	TextView t = (TextView)findViewById(R.id.textView1);
     	lakevol+=0.1;
-    	t.setText(Float.toString(lakevol));
     	mplake.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
     	mplake.setVolume(lakevol,lakevol);
-    }
-    
-    public  void onClick2(View v)
-    {
     }
     
     public void createSDCardDir(){
@@ -269,7 +478,7 @@ public class MainActivity extends Activity
     
     @Override  
  // 创建上下文菜单  
- public void onCreateContextMenu(ContextMenu menu, View v,  
+    public void onCreateContextMenu(ContextMenu menu, View v,  
     ContextMenuInfo menuInfo) {  
    // 向上下文菜单中添加菜单项  
    // 注意此处的menu是ContextMenu  
@@ -291,6 +500,7 @@ public class MainActivity extends Activity
 		   }
     	}
  } 
+    
     @Override
     public boolean onContextItemSelected(MenuItem item) {
     	//dialog(Integer.toString(item.getItemId()));
@@ -363,7 +573,7 @@ public class MainActivity extends Activity
 				arg0.dismiss();
 			}
 		});
-    	  builder.setPositiveButton("测试", new DialogInterface.OnClickListener() {
+    	  /*builder.setPositiveButton("测试", new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
@@ -371,7 +581,7 @@ public class MainActivity extends Activity
 				 Toast.makeText(MainActivity.this, "谈不上喜欢不喜欢。", Toast.LENGTH_LONG)
 			       .show();
 			}
-		});
+		});*/
     	    //builder.create().show();
     	    builder.show();
     	}
