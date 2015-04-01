@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -19,6 +21,7 @@ import android.renderscript.Float4;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.ViewGroup.LayoutParams;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +37,9 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
+import cn.domob.android.ads.AdEventListener;
+import cn.domob.android.ads.AdView;
+import cn.domob.android.ads.AdManager.ErrorCode;
 
 public class MainActivity extends Activity 
 {
@@ -52,6 +58,8 @@ public class MainActivity extends Activity
     ListSelect adapter;
     ListSelect adapterright;
     
+    RelativeLayout mAdContainer;
+	AdView mAdview;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +69,50 @@ public class MainActivity extends Activity
         aSeekBar3.setOnSeekBarChangeListener(verticalSeekBarChangeListener3);
         VerticalSeekBarT aSeekBar4 = (VerticalSeekBarT)findViewById(R.id.verticalSeekBar4);
         aSeekBar4.setOnSeekBarChangeListener(verticalSeekBarChangeListener4);
+        
+        
+        mAdContainer = (RelativeLayout) findViewById(R.id.container1231);
+		// Create ad view
+		mAdview = new AdView(this, "56OJxcBYuN7SSTy3Z9", "16TLenBaAp8acNUdp5prFtkk");
+		mAdview.setKeyword("”Í¡ÿ°§∫Æ≤ı");
+		mAdview.setUserGender("male");
+		mAdview.setUserBirthdayStr("1979-11-30");
+		mAdview.setUserPostcode("518000");
+		mAdview.setAdEventListener(new AdEventListener() {
+			@Override
+			public void onAdOverlayPresented(AdView adView) {
+				Log.i("DomobSDKDemo", "overlayPresented");
+			}
+			@Override
+			public void onAdOverlayDismissed(AdView adView) {
+				Log.i("DomobSDKDemo", "Overrided be dismissed");
+			}
+			@Override
+			public void onAdClicked(AdView arg0) {
+				Log.i("DomobSDKDemo", "onDomobAdClicked");
+			}
+			@Override
+			public void onLeaveApplication(AdView arg0) {
+				Log.i("DomobSDKDemo", "onDomobLeaveApplication");
+			}
+			@Override
+			public Context onAdRequiresCurrentContext() {
+				return MainActivity.this;
+			}
+			@Override
+			public void onAdFailed(AdView arg0, ErrorCode arg1) {
+				Log.i("DomobSDKDemo", "onDomobAdFailed");
+			}
+			@Override
+			public void onEventAdReturned(AdView arg0) {
+				Log.i("DomobSDKDemo", "onDomobAdReturned");
+			}
+		});
+		RelativeLayout.LayoutParams layout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT);
+		layout.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		mAdview.setLayoutParams(layout);
+		mAdContainer.addView(mAdview);
 //        if (savedInstanceState == null) {
 //            getFragmentManager().beginTransaction()
 //                    .add(R.id.container, new PlaceholderFragment())
