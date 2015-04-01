@@ -8,6 +8,11 @@
     tools:context="com.example.a1.MainActivity"
     tools:ignore="MergeRootFrame" >
 
-    
+    <SeekBar
+        android2:id="@+id/seekBar1"
+        android2:layout_width="match_parent"
+        android2:layout_height="wrap_content"
+        android2:layout_alignParentLeft="true"
+        android2:layout_centerVertical="false" />
 
 </RelativeLayout>

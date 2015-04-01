@@ -14,6 +14,9 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
+import android.renderscript.Float2;
+import android.renderscript.Float4;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -27,6 +30,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,24 +41,33 @@ public class MainActivity extends Activity
 	MediaPlayer mplake; 
 	Boolean israinplay = false;
     Boolean islakeplay = false;
+    int rainprocess =50;
+    int lakeprocess =50;
+    String rainname = "";
+    String lakename = "";
     float lakevol=(float)0.1;
     String[] ls=null;
     ListView listViewleft=null;
     ListView listViewright=null;
+    ListSelect adapter;
+    ListSelect adapterright;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.solidrelative);
         init();
+        VerticalSeekBarT aSeekBar3 = (VerticalSeekBarT)findViewById(R.id.verticalSeekBar3);
+        aSeekBar3.setOnSeekBarChangeListener(verticalSeekBarChangeListener3);
+        VerticalSeekBarT aSeekBar4 = (VerticalSeekBarT)findViewById(R.id.verticalSeekBar4);
+        aSeekBar4.setOnSeekBarChangeListener(verticalSeekBarChangeListener4);
 //        if (savedInstanceState == null) {
 //            getFragmentManager().beginTransaction()
 //                    .add(R.id.container, new PlaceholderFragment())
 //                    .commit();
 //        }
     }
-    ListSelect adapter;
-    ListSelect adapterright;
+    
     private void init()
     {
     	BidirSlidingLayout bidirSldingLayout= (BidirSlidingLayout) findViewById(R.id.bidir_sliding_layout);  
@@ -62,10 +76,12 @@ public class MainActivity extends Activity
         bidirSldingLayout.setScrollEvent(container1); 
         
         	mprain=MediaPlayer.create(this,R.raw.rainsound);
-        	mprain.setOnCompletionListener(mplistener);
+        	mprain.setLooping(true);
+        	//mprain.setOnCompletionListener(mplistener);
         	
         	mplake=MediaPlayer.create(this,R.raw.lake);
-        	mplake.setOnCompletionListener(mplistenerlake);
+        	mplake.setLooping(true);
+        	//mplake.setOnCompletionListener(mplistenerlake);
         	createSDCardDir();
         	
         	adapter = new ListSelect(this,getData()); 
@@ -80,6 +96,18 @@ public class MainActivity extends Activity
         		adapter.notifyDataSetInvalidated();
         		
         		String item = adapter.getItem(position);
+        		if(israinplay)
+            	{
+        			if(!item.equals(rainname))
+        			{
+        			Button b = (Button)findViewById(R.id.button3);
+            		mprain.stop();
+        	    	israinplay=false;
+        	    	b.setBackgroundResource(R.drawable.main_play);
+        			}
+        			else
+        				return;
+            	}    
         		if(item.equals("œ∏”Í"))
                 {
     				 StopMp(mprain);
@@ -92,6 +120,18 @@ public class MainActivity extends Activity
     		        	mprain=MediaPlayer.create(MainActivity.this,R.raw.sea);
     		        	mprain.setOnCompletionListener(mplistener);
                 }
+    			 else if(item.equals("∏÷«Ÿ"))
+                 {
+     				 StopMp(mprain);
+     		        	mprain=MediaPlayer.create(MainActivity.this,R.raw.lake);
+     		        	mprain.setOnCompletionListener(mplistener);
+                 }
+    			 else if(item.equals("π≈«Ÿ"))
+                 {
+     				 StopMp(mprain);
+     		        	mprain=MediaPlayer.create(MainActivity.this,R.raw.gq);
+     		        	mprain.setOnCompletionListener(mplistener);
+                 }
     			 else
     			 {
     				 File sdcardDir =Environment.getExternalStorageDirectory();
@@ -99,6 +139,7 @@ public class MainActivity extends Activity
     		              String path=sdcardDir.getPath()+"/rainlake/"+item;
     		              StopMp(mprain);
     		              mprain = new MediaPlayer();
+    		              mprain.setLooping(true);
     		              try {
     		            	  mprain.setDataSource(path);
     					} catch (IllegalArgumentException e) {
@@ -133,6 +174,20 @@ public class MainActivity extends Activity
         		adapterright.cur_pos = position;// ∏¸–¬µ±«∞––    
         		adapterright.notifyDataSetInvalidated();
         		String item = adapterright.getItem(position);
+        		
+        		if(islakeplay)
+            	{
+        			if(!item.equals(lakename))
+        			{
+        			Button b = (Button)findViewById(R.id.button4);
+            		mplake.stop();
+            		islakeplay=false;
+        	    	b.setBackgroundResource(R.drawable.main_play);
+        			}
+        			else
+        				return;
+            	}    
+        		
         		if(item.equals("œ∏”Í"))
                 {
      				 StopMp(mplake);
@@ -145,6 +200,18 @@ public class MainActivity extends Activity
      				 mplake=MediaPlayer.create(MainActivity.this,R.raw.sea);
      				 mplake.setOnCompletionListener(mplistener);
                 }
+     			else if(item.equals("∏÷«Ÿ"))
+                {
+    				 StopMp(mplake);
+    				 mplake=MediaPlayer.create(MainActivity.this,R.raw.lake);
+    				 mplake.setOnCompletionListener(mplistener);
+                }
+   			 else if(item.equals("π≈«Ÿ"))
+                {
+    				 StopMp(mplake);
+    				 mplake=MediaPlayer.create(MainActivity.this,R.raw.gq);
+    				 mplake.setOnCompletionListener(mplistener);
+                }
      			 else
      			 {
      				 File sdcardDir =Environment.getExternalStorageDirectory();
@@ -152,6 +219,7 @@ public class MainActivity extends Activity
      		              String path=sdcardDir.getPath()+"/rainlake/"+item;
      		              StopMp(mplake);
      		              mplake = new MediaPlayer();
+     		             mplake.setLooping(true);
      		              try {
      		            	  mplake.setDataSource(path);
      					} catch (IllegalArgumentException e) {
@@ -167,6 +235,7 @@ public class MainActivity extends Activity
      						// TODO Auto-generated catch block
      						e.printStackTrace();
      					}
+     		             
      			 }
         	}    
         	});   
@@ -179,15 +248,10 @@ public class MainActivity extends Activity
     private List<String> getData(){
         
         List<String> data = new ArrayList<String>();
-        /*data.add("1");
-        data.add("11");
-        data.add("111");
-        data.add("1111");
-        data.add("11111");
-        data.add("111111");
-        data.add("1111111");*/
         data.add("œ∏”Í");
         data.add("¥Û∫£");
+        data.add("∏÷«Ÿ");
+        data.add("π≈«Ÿ");
         if(ls!=null)
 		   {
 		   for(int i=0;i<ls.length;i++)
@@ -197,13 +261,83 @@ public class MainActivity extends Activity
 		   }
         return data;
     }
+
+    private OnSeekBarChangeListener verticalSeekBarChangeListener3 = new OnSeekBarChangeListener()
+    {
+        
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar)
+        {
+        	try {
+				mprain.prepare();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	
+        }
+        
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar)
+        {
+            
+        }
+        
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress,
+                boolean fromUser)
+        {
+            //Log.d(AppConstants.LOG_TAG, "Vertical SeekBar --> onProgressChanged");
+            //verticalText.setText(Integer.toString(progress));
+            //TextView tv = (TextView)findViewById(R.id.textView1);
+            //tv.setText(Integer.toString(progress));
+        	rainprocess = progress;
+        	float frain = (float)(rainprocess);
+        	float a1 = 100.00f;
+        	float vol = frain/a1;
+        	mprain.setVolume(vol, vol);
+        	//Log.d("rainprocess", Integer.toString(rainprocess)+":"+ Float.toString(vol));
+        }
+    };
     
+    
+    private OnSeekBarChangeListener verticalSeekBarChangeListener4 = new OnSeekBarChangeListener()
+    {
+        
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar)
+        {
+        	
+        }
+        
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar)
+        {
+            
+        }
+        
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress,
+                boolean fromUser)
+        {
+            //Log.d(AppConstants.LOG_TAG, "Vertical SeekBar --> onProgressChanged");
+        	lakeprocess = progress;
+        	float flake = (float)(lakeprocess);
+        	float a1 = 100.00f;
+        	float vol = flake/a1;
+        	mplake.setVolume(vol, vol);
+        }
+    };
+
     MediaPlayer.OnCompletionListener mplistener = new MediaPlayer.OnCompletionListener() {
 		
 		@Override
 		public void onCompletion(MediaPlayer arg0) {
 
-			String item = adapter.getItem(adapter.cur_pos);
+		String item = adapter.getItem(adapter.cur_pos);
 			if(item.equals("œ∏”Í"))
             {
  				
@@ -236,7 +370,12 @@ public class MainActivity extends Activity
  			 }
 			
 			try {
-				arg0.prepareAsync();
+				try {
+					arg0.prepare();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} catch (IllegalStateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -281,7 +420,12 @@ public class MainActivity extends Activity
  					}
  			 }
 			try {
-				arg0.prepareAsync();
+				try {
+					arg0.prepare();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} catch (IllegalStateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -289,6 +433,7 @@ public class MainActivity extends Activity
 			arg0.start();
 		}
 	};
+	
 	
 	
 	@Override 
@@ -354,27 +499,61 @@ public class MainActivity extends Activity
     	init();
     }
     
+    void StartMediaP(MediaPlayer mp,Boolean isplay,Button b)
+    {
+    	if(!isplay)
+    	{
+    		
+				try {
+					mp.prepare();
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//mprain.setVolume(rainprocess/100, rainprocess/100);
+				mp.start();  
+				isplay=true;
+	    	b.setBackgroundResource(R.drawable.main_pause);
+    	}
+    	else
+    	{
+    		mp.pause();
+    		isplay=false;
+	    	b.setBackgroundResource(R.drawable.main_play);
+    	}    	
+    }
+    
     public  void onrain(View v)
     {
     	Button b = (Button)findViewById(R.id.button3);
+    	//StartMediaP(mprain,israinplay,b);
     	if(!israinplay)
     	{
-    		try {
-				mprain.prepareAsync();
-			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+    		
+				try {
+					mprain.prepare();
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//mprain.setVolume(rainprocess/100, rainprocess/100);
 	    	mprain.start();  
 	    	israinplay=true;
 	    	b.setBackgroundResource(R.drawable.main_pause);
+	    	rainname = adapter.getItem(adapterright.cur_pos);
     	}
     	else
     	{
     		mprain.pause();
 	    	israinplay=false;
 	    	b.setBackgroundResource(R.drawable.main_play);
-    	}
+    	}    	
     }
     
     public  void onlake(View v)
@@ -383,14 +562,19 @@ public class MainActivity extends Activity
     	if(!islakeplay)
     	{
     		try {
-				mplake.prepareAsync();
+				mplake.prepare();
 			} catch (IllegalStateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+    		mplake.setVolume(0.5f, 0.5f);
     		mplake.start();  
 	    	islakeplay=true;
 	    	b.setBackgroundResource(R.drawable.main_pause);
+	    	lakename = adapterright.getItem(adapterright.cur_pos);
     	}
     	else
     	{
